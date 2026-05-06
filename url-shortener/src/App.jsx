@@ -5,115 +5,74 @@ import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [urlInput, setUrlInput] = useState('')
+  const [result, setResult] = useState('')
+  const [error, setError] = useState('')
+
+  const handleShorten = async (e) => {
+    e.preventDefault()
+    setError('')
+    try {
+      const response = await fetch('/api/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ long_url: urlInput })
+      })
+      if (!response.ok) throw new Error('Failed to shorten URL')
+      const data = await response.json()
+      setResult(`${window.location.origin}/api/${data.short_code}`)
+    } catch (err) {
+      setResult('')
+      setError(err.message)
+    }
+    setUrlInput('')
+  }
+
+  const handleGetLongUrl = async (e) => {
+    e.preventDefault()
+    setError('')
+    try {
+      const shortCode = urlInput.split('/').pop()
+      const response = await fetch(`/api/lengthen?short_code=${shortCode}`)
+      if (!response.ok) throw new Error('Short URL not found')
+      const data = await response.json()
+      setResult(data.long_url)
+    } catch (err) {
+      setResult('')
+      setError(err.message)
+    }
+    setUrlInput('')
+  }
 
   return (
     <>
       <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+        <div>
+          <h1>Ben's URL Shortener</h1>
         </div>
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+          <form style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+            <input
+              type="url"
+              placeholder="Enter a URL"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              required
+            />
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button type="submit" onClick={handleShorten}>Get Short URL</button>
+              <button type="button" onClick={handleGetLongUrl}>Get Long URL</button>
+            </div>
+          </form>
         </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+        {result && (
+          <div className="result-box" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span>{result}</span>
+            <button onClick={() => navigator.clipboard.writeText(result)}>📋</button>
+          </div>
+        )}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
       </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
     </>
   )
 }
