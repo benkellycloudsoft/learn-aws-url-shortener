@@ -1,9 +1,15 @@
 # After terraform creates our resources this will print out some key values
 output "bucket_name" {
-    value = "${aws_s3_bucket.url_shortener_bucket.bucket}"
+    value = aws_s3_bucket.url_shortener_bucket.bucket
 }
 
-output "bucket_domain_name" {
+output "cloudfront_url" {
     description = "URL of the deployed React app"
-    value = "http://${var.bucket_name}.s3-website.${var.region}.amazonaws.com"
+    value = "https://${aws_cloudfront_distribution.url_shortener.domain_name}"
+}
+
+# Distribution ID, this is needed to invalidate the CloudFront cached files
+output "cloudfront_distribution_id" {
+    description = "CloudFront distribution ID for cache invalidation"
+    value = aws_cloudfront_distribution.url_shortener.id
 }
