@@ -32,6 +32,7 @@ You can try to build this directly on the AWS console to start with, and later b
 ```bash
 terraform state rm aws_iam_role.lambda_role
 terraform state rm aws_iam_role_policy_attachment.lambda_basic_execution
+terraform state rm aws_iam_role_policy.lambda_dynamodb
 ```
 *This removes these from state so destroy won't try to delete them (TrainingDeveloper lacks iam:DeleteRolePolicy permission)*
 
