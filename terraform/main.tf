@@ -39,14 +39,14 @@ resource "aws_cloudfront_distribution" "url_shortener" {
   enabled             = true
   default_root_object = "index.html"
 
-  # S3 origin — serves your React app's static files (HTML, JS, CSS)
+  # S3 origin — serves the React app's static files (HTML, JS, CSS)
   origin {
     domain_name              = aws_s3_bucket.url_shortener_bucket.bucket_regional_domain_name
     origin_id                = "s3"
     origin_access_control_id = aws_cloudfront_origin_access_control.s3_oac.id
   }
 
-  # API Gateway origin — serves your Lambda backend
+  # API Gateway origin — serves the Lambda backend
   origin {
     domain_name = trimsuffix(replace(aws_apigatewayv2_stage.default.invoke_url, "https://", ""), "/")
     origin_id   = "api"
@@ -59,7 +59,7 @@ resource "aws_cloudfront_distribution" "url_shortener" {
     }
   }
 
-  # Default behavior — all requests go to S3 (your React app)
+  # Default behavior — all requests go to S3 (the React app)
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]

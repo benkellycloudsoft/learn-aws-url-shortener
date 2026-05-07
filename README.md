@@ -21,6 +21,11 @@ You can try to build this directly on the AWS console to start with, and later b
 
 `terraform apply --auto-approve`
 
+*Note: if you've previously had to detatch iam roles (due to permission issues) you might have to run the following before running terraform apply:*
+`terraform import aws_iam_role.lambda_role lambda-url-shortener-role`
+
+
+
 `terraform destroy` = tears everything down
 
 *Note: before running terraform destroy, run:*
